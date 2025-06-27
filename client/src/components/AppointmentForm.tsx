@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fr } from "date-fns/locale";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
@@ -20,13 +21,24 @@ const AppointmentForm = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
+  // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  const dayKeys = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/working-hours")
       .then((res) => {
         const days = res.data
           .filter((d: any) => d.isWorkingDay)
-          .map((d: any) => d.day); // ex: "monday", "tuesday"
+          .map((d: any) => d.day.toLowerCase()); // sécurité : .toLowerCase()
         setWorkingDays(days);
       })
       .catch((err) => {
@@ -36,10 +48,8 @@ const AppointmentForm = () => {
   }, []);
 
   const isDayDisabled = (date: Date) => {
-    const weekday = date
-      .toLocaleDateString("en-US", { weekday: "long" })
-      .toLowerCase();
-    return !workingDays.includes(weekday);
+    const dayName = dayKeys[date.getDay()];
+    return !workingDays.includes(dayName);
   };
 
   const handleChange = (
@@ -153,10 +163,9 @@ const AppointmentForm = () => {
             className="input w-full"
             minDate={new Date()}
             dateFormat="dd/MM/yyyy"
-            popperPlacement="bottom-start"
-            popperClassName="z-50"
-            portalId="root-portal"
+            locale={fr}
             withPortal
+            calendarStartDay={1}
           />
         </div>
 

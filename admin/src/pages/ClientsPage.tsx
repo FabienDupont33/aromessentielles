@@ -1,14 +1,7 @@
 // src/pages/ClientsPage.tsx
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-type Client = {
-  _id?: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email: string;
-};
+import type { Client } from "../types";
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[]>([]);

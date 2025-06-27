@@ -35,7 +35,7 @@ const Services = () => {
       {/* Bouton prendre RDV */}
       <div className="mt-16 text-center">
         <a
-          href="/contact"
+          href="/prendre-rendez-vous"
           className="bg-primary text-white px-8 py-3 rounded-full shadow-md hover:bg-[#94c9ab] transition"
         >
           Prendre rendez-vous

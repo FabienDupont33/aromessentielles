@@ -22,3 +22,11 @@ export type WorkingHours = {
   morning?: TimeRange;
   afternoon?: TimeRange;
 };
+
+export type Client = {
+  _id?: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+};

@@ -28,7 +28,7 @@ const Home = () => {
             </p>
 
             <Link
-              to="/contact"
+              to="/prendre-rendez-vous"
               className="inline-block bg-primary text-white px-6 py-3 rounded-full shadow-md hover:bg-[#94c9ab] transition"
             >
               Prendre rendez-vous

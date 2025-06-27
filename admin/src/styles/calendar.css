@@ -1,5 +1,23 @@
+.fc-event {
+  max-width: 100% !important;
+  overflow: hidden;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
 .fc-daygrid-event-dot {
   display: none !important; /* cache les petits points */
+}
+
+.fc-timegrid-event-harness .fc-event {
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  overflow: hidden;
+  font-size: 0.85rem;
+}
+
+.fc .fc-timegrid-slot-label-cushion {
+  font-weight: bold;
 }
 
 .event-pending {

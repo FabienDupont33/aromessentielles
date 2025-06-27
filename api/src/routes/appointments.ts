@@ -6,7 +6,8 @@ const router = express.Router();
 
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const { name, email, phone, service, date, time, message } = req.body;
+    const { name, email, phone, service, date, time, message, status } =
+      req.body;
 
     if (!name || !email || !phone || !service || !date || !time) {
       return res.status(400).json({ error: "Champs requis manquants." });
@@ -20,21 +21,10 @@ router.post("/", async (req: Request, res: Response) => {
       date,
       time,
       message,
-      status: "pending",
+      status,
     });
 
     await appointment.save();
-
-    console.log("📨 Tentative d'envoi de mail avec les données :", {
-      name,
-      email,
-      phone,
-      service,
-      date,
-      time,
-      message,
-    });
-    console.log("📨 Vers :", process.env.NOTIFY_EMAIL);
 
     await sendAppointmentEmail({
       to: process.env.NOTIFY_EMAIL!,
@@ -96,6 +86,30 @@ router.get("/date/:date", async (req, res) => {
   const { date } = req.params;
   const appointments = await Appointment.find({ date });
   res.json(appointments);
+});
+
+router.patch("/:id", async (req: Request, res: Response) => {
+  try {
+    const { status } = req.body;
+    if (!["pending", "accepted", "rejected"].includes(status)) {
+      return res.status(400).json({ error: "Statut invalide" });
+    }
+
+    const updated = await Appointment.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Rendez-vous non trouvé" });
+    }
+
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
 });
 
 export default router;

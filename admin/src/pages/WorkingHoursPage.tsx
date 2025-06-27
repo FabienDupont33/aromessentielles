@@ -2,18 +2,16 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import type { WorkingHours } from "../types";
 
+// Mapping backend (clé) → affichage français (valeur)
 const days = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
+  { key: "monday", label: "Lundi" },
+  { key: "tuesday", label: "Mardi" },
+  { key: "wednesday", label: "Mercredi" },
+  { key: "thursday", label: "Jeudi" },
+  { key: "friday", label: "Vendredi" },
+  { key: "saturday", label: "Samedi" },
+  { key: "sunday", label: "Dimanche" },
 ];
-
-const capitalize = (word: string) =>
-  word.charAt(0).toUpperCase() + word.slice(1);
 
 const WorkingHoursPage = () => {
   const [hours, setHours] = useState<WorkingHours[]>([]);
@@ -29,9 +27,9 @@ const WorkingHoursPage = () => {
         });
 
         const complete = days.map(
-          (day) =>
-            existing[day] || {
-              day,
+          ({ key }) =>
+            existing[key] || {
+              day: key,
               isWorkingDay: false,
               morning: { start: "", end: "" },
               afternoon: { start: "", end: "" },
@@ -123,22 +121,22 @@ const WorkingHoursPage = () => {
       </h2>
 
       <div className="space-y-4">
-        {days.map((day) => {
-          const dayData = hours.find((h) => h.day === day) || {
-            day,
+        {days.map(({ key, label }) => {
+          const dayData = hours.find((h) => h.day === key) || {
+            day: key,
             isWorkingDay: false,
           };
 
           return (
-            <div key={day} className="border rounded p-4 bg-white shadow-sm">
+            <div key={key} className="border rounded p-4 bg-white shadow-sm">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold">{capitalize(day)}</h3>
+                <h3 className="text-lg font-semibold">{label}</h3>
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={dayData.isWorkingDay}
                     onChange={(e) =>
-                      handleChange(day, "isWorkingDay", e.target.checked)
+                      handleChange(key, "isWorkingDay", e.target.checked)
                     }
                   />
                   Travaille ce jour
@@ -156,7 +154,7 @@ const WorkingHoursPage = () => {
                         value={dayData.morning?.start || ""}
                         onChange={(e) =>
                           handleTimeChange(
-                            day,
+                            key,
                             "morning",
                             "start",
                             e.target.value
@@ -170,7 +168,7 @@ const WorkingHoursPage = () => {
                         value={dayData.morning?.end || ""}
                         onChange={(e) =>
                           handleTimeChange(
-                            day,
+                            key,
                             "morning",
                             "end",
                             e.target.value
@@ -190,7 +188,7 @@ const WorkingHoursPage = () => {
                         value={dayData.afternoon?.start || ""}
                         onChange={(e) =>
                           handleTimeChange(
-                            day,
+                            key,
                             "afternoon",
                             "start",
                             e.target.value
@@ -204,7 +202,7 @@ const WorkingHoursPage = () => {
                         value={dayData.afternoon?.end || ""}
                         onChange={(e) =>
                           handleTimeChange(
-                            day,
+                            key,
                             "afternoon",
                             "end",
                             e.target.value
