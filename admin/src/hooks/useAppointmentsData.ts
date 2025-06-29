@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import type { Appointment, WorkingHours } from "../types";
+import { API_BASE_URL } from "../config";
 
 export const useAppointmentsData = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -14,9 +15,9 @@ export const useAppointmentsData = () => {
   const fetchData = async () => {
     try {
       const [resAppointments, resHours, resSettings] = await Promise.all([
-        axios.get("http://localhost:5000/api/appointments"),
-        axios.get("http://localhost:5000/api/working-hours"),
-        axios.get("http://localhost:5000/api/settings"),
+        axios.get(`${API_BASE_URL}/api/appointments`),
+        axios.get(`${API_BASE_URL}/api/working-hours`),
+        axios.get(`${API_BASE_URL}/api/settings`),
       ]);
       setAppointments(resAppointments.data);
       setWorkingHours(resHours.data);
@@ -28,7 +29,7 @@ export const useAppointmentsData = () => {
 
   const fetchAppointments = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/appointments");
+      const res = await axios.get(`${API_BASE_URL}/api/appointments`);
       setAppointments(res.data);
     } catch (err) {
       console.error("Erreur lors du rechargement des rendez-vous", err);
@@ -40,10 +41,9 @@ export const useAppointmentsData = () => {
     status: "accepted" | "rejected"
   ) => {
     try {
-      const res = await axios.put(
-        `http://localhost:5000/api/appointments/${id}`,
-        { status }
-      );
+      const res = await axios.put(`${API_BASE_URL}/api/appointments/${id}`, {
+        status,
+      });
       setAppointments((prev) =>
         prev.map((appt) => (appt._id === id ? res.data : appt))
       );

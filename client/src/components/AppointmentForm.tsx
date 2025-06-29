@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import TimeSlotPicker from "../components/TimeSlotPicker";
+import { API_BASE_URL } from "../config";
 
 const AppointmentForm = () => {
   const [formData, setFormData] = useState({
@@ -34,7 +35,7 @@ const AppointmentForm = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/working-hours")
+      .get(`${API_BASE_URL}/api/working-hours`)
       .then((res) => {
         const days = res.data
           .filter((d: any) => d.isWorkingDay)
@@ -66,7 +67,7 @@ const AppointmentForm = () => {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/appointments", {
+      const res = await fetch(`${API_BASE_URL}/api/appointments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -154,7 +155,13 @@ const AppointmentForm = () => {
               setSelectedDate(date);
               setFormData((prev) => ({
                 ...prev,
-                date: date.toISOString().split("T")[0],
+                date: `${date.getFullYear()}-${(date.getMonth() + 1)
+                  .toString()
+                  .padStart(2, "0")}-${date
+                  .getDate()
+                  .toString()
+                  .padStart(2, "0")}`,
+
                 time: "",
               }));
             }}

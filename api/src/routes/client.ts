@@ -15,29 +15,25 @@ router.get("/", async (req, res) => {
 
 // Create a client
 router.post("/", async (req, res) => {
-  const { firstName, lastName, phone, email } = req.body;
+  const { firstName, lastName, phone, email, notes } = req.body;
   try {
-    const newClient = await Client.create({
-      firstName,
-      lastName,
-      phone,
-      email,
-    });
-    res.status(201).json(newClient);
+    const client = new Client({ firstName, lastName, phone, email, notes });
+    await client.save();
+    res.status(201).json(client);
   } catch (err) {
-    res.status(400).json({ error: "Erreur lors de la création" });
+    res.status(500).json({ error: "Erreur lors de la création du client." });
   }
 });
 
 // Update a client
 router.put("/:id", async (req, res) => {
   try {
-    const updated = await Client.findByIdAndUpdate(req.params.id, req.body, {
+    const client = await Client.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    res.json(updated);
+    res.json(client);
   } catch (err) {
-    res.status(400).json({ error: "Erreur lors de la mise à jour" });
+    res.status(500).json({ error: "Erreur lors de la mise à jour." });
   }
 });
 

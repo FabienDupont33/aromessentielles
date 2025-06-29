@@ -1,4 +1,3 @@
-// src/components/TimeSlotPicker.tsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -10,6 +9,7 @@ interface Props {
 const TimeSlotPicker = ({ selectedDate, onTimeSelected }: Props) => {
   const [slots, setSlots] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTime, setSelectedTime] = useState<string>("");
 
   useEffect(() => {
     const fetchSlots = async () => {
@@ -28,10 +28,19 @@ const TimeSlotPicker = ({ selectedDate, onTimeSelected }: Props) => {
         const sessionDuration = settingsRes.data.sessionDuration;
         const takenAppointments = appointmentsRes.data.map((a: any) => a.time);
 
-        const date = new Date(selectedDate);
-        const dayName = date
-          .toLocaleDateString("en-US", { weekday: "long" })
-          .toLowerCase();
+        const [year, month, day] = selectedDate.split("-").map(Number);
+        const jsDate = new Date(year, month - 1, day);
+        const dayIndex = jsDate.getDay();
+
+        const dayName = [
+          "sunday",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+        ][dayIndex];
 
         const dayConfig = workingHours.find((h: any) => h.day === dayName);
 
@@ -42,8 +51,20 @@ const TimeSlotPicker = ({ selectedDate, onTimeSelected }: Props) => {
 
         const generateSlots = (start: string, end: string): string[] => {
           const result: string[] = [];
-          let current = new Date(`${selectedDate}T${start}`);
-          const endDate = new Date(`${selectedDate}T${end}`);
+
+          const [startHour, startMinute] = start.split(":").map(Number);
+          const [endHour, endMinute] = end.split(":").map(Number);
+
+          const startDate = new Date(
+            year,
+            month - 1,
+            day,
+            startHour,
+            startMinute
+          );
+          const endDate = new Date(year, month - 1, day, endHour, endMinute);
+
+          let current = new Date(startDate);
 
           while (current < endDate) {
             const timeStr = current.toTimeString().slice(0, 5);
@@ -67,6 +88,7 @@ const TimeSlotPicker = ({ selectedDate, onTimeSelected }: Props) => {
             : [];
 
         setSlots([...morningSlots, ...afternoonSlots]);
+        setSelectedTime(""); // Réinitialiser la sélection si on change de jour
       } catch (err) {
         console.error("Erreur chargement des créneaux :", err);
         setSlots([]);
@@ -78,10 +100,16 @@ const TimeSlotPicker = ({ selectedDate, onTimeSelected }: Props) => {
     fetchSlots();
   }, [selectedDate]);
 
-  if (loading)
+  const handleSelectTime = (time: string) => {
+    setSelectedTime(time);
+    onTimeSelected(time);
+  };
+
+  if (loading) {
     return (
       <p className="text-center text-gray-500">Chargement des créneaux...</p>
     );
+  }
 
   if (slots.length === 0) {
     return (
@@ -99,8 +127,12 @@ const TimeSlotPicker = ({ selectedDate, onTimeSelected }: Props) => {
           <button
             key={time}
             type="button"
-            onClick={() => onTimeSelected(time)}
-            className="border px-4 py-2 rounded hover:bg-primary hover:text-white transition"
+            onClick={() => handleSelectTime(time)}
+            className={`border px-4 py-2 rounded transition ${
+              selectedTime === time
+                ? "bg-primary text-white"
+                : "hover:bg-primary hover:text-white"
+            }`}
           >
             {time}
           </button>

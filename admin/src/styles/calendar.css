@@ -6,7 +6,7 @@
 }
 
 .fc-daygrid-event-dot {
-  display: none !important; /* cache les petits points */
+  display: none !important;
 }
 
 .fc-timegrid-event-harness .fc-event {
@@ -21,15 +21,15 @@
 }
 
 .event-pending {
-  background-color: #f59e0b !important; /* orange */
+  background-color: #f59e0b !important;
   color: white !important;
 }
 .event-confirmed {
-  background-color: #16a34a !important; /* vert */
+  background-color: #16a34a !important;
   color: white !important;
 }
 .event-rejected {
-  background-color: #dc2626 !important; /* rouge */
+  background-color: #dc2626 !important;
   color: white !important;
 }
 
@@ -44,7 +44,7 @@
 }
 
 .slot-available {
-  background-color: #f3f4f6 !important; /* gris clair */
-  color: #6b7280 !important; /* gris foncé */
+  background-color: #f3f4f6 !important;
+  color: #6b7280 !important;
   font-style: italic;
 }

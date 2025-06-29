@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import type { Client } from "../types";
+import { API_BASE_URL } from "../config";
 
 interface Props {
   date: string;
@@ -10,13 +11,7 @@ interface Props {
   defaultStatus?: "pending" | "accepted";
 }
 
-const AddAppointmentModal = ({
-  date,
-  time,
-  onClose,
-  onSuccess,
-  defaultStatus = "accepted",
-}: Props) => {
+const AddAppointmentModal = ({ date, time, onClose, onSuccess }: Props) => {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState("");
   const [formData, setFormData] = useState({
@@ -30,7 +25,7 @@ const AddAppointmentModal = ({
   });
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/clients").then((res) => {
+    axios.get(`${API_BASE_URL}/api/clients`).then((res) => {
       setClients(res.data);
     });
   }, []);
@@ -60,7 +55,7 @@ const AddAppointmentModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/appointments", {
+      await axios.post(`${API_BASE_URL}/api/appointments`, {
         ...formData,
         status: "accepted",
       });

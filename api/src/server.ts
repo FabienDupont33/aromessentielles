@@ -7,6 +7,7 @@ import appointmentsRouter from "./routes/appointments";
 import workingHoursRoutes from "./routes/workingHours";
 import settingsRoutes from "./routes/settings";
 import clientRoutes from "./routes/client";
+import authRoutes from "./routes/auth";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use("/api/appointments", appointmentsRouter);
 app.use("/api/working-hours", workingHoursRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/clients", clientRoutes);
+app.use("/api/auth", authRoutes);
 
 mongoose
   .connect(MONGO_URI)

@@ -29,4 +29,5 @@ export type Client = {
   lastName: string;
   phone: string;
   email: string;
+  notes?: string;
 };

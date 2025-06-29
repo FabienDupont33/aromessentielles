@@ -84,6 +84,13 @@ const AppointmentsPage = () => {
         datesSet={(arg) => {
           localStorage.setItem("calendarView", arg.view.type);
         }}
+        slotMinTime="08:00:00"
+        slotMaxTime="19:00:00"
+        slotDuration={`00:${sessionDuration.toString().padStart(2, "0")}:00`}
+        slotLabelInterval={`00:${sessionDuration
+          .toString()
+          .padStart(2, "0")}:00`}
+        weekends={false}
       />
 
       {selectedAppointment && (

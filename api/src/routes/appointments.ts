@@ -112,4 +112,15 @@ router.patch("/:id", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/client/:email", async (req, res) => {
+  try {
+    const appointments = await Appointment.find({ email: req.params.email });
+    res.json(appointments);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération des rendez-vous." });
+  }
+});
+
 export default router;

@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 
 const navLinks = [
+  { to: "http://localhost:5173", label: "Aroma" },
   { to: "/appointments", label: "Rendez-vous" },
   { to: "/working-hours", label: "Horaires" },
-  { to: "/clients", label: "Clients" }, // 🔥 Nouveau lien ajouté ici
+  { to: "/clients", label: "Clients" },
 ];
 
 const Navbar = () => {

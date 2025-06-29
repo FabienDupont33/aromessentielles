@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import type { WorkingHours } from "../types";
+import { API_BASE_URL } from "../config";
 
 // Mapping backend (clé) → affichage français (valeur)
 const days = [
@@ -19,7 +20,7 @@ const WorkingHoursPage = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/working-hours")
+      .get(`${API_BASE_URL}/api/working-hours`)
       .then((res) => {
         const existing: Record<string, WorkingHours> = {};
         res.data.forEach((h: WorkingHours) => {
@@ -43,7 +44,7 @@ const WorkingHoursPage = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/settings")
+      .get(`${API_BASE_URL}/api/settings`)
       .then((res) => setSessionDuration(res.data.sessionDuration || 60))
       .catch((err) => console.error("Erreur chargement durée:", err));
   }, []);
@@ -79,7 +80,7 @@ const WorkingHoursPage = () => {
     try {
       await Promise.all(
         hours.map((h) =>
-          axios.put(`http://localhost:5000/api/working-hours/${h.day}`, h)
+          axios.put(`${API_BASE_URL}/api/working-hours/${h.day}`, h)
         )
       );
       alert("Horaires enregistrés !");
@@ -106,7 +107,7 @@ const WorkingHoursPage = () => {
         <button
           onClick={() => {
             axios
-              .put("http://localhost:5000/api/settings", { sessionDuration })
+              .put(`${API_BASE_URL}/api/settings`, { sessionDuration })
               .then(() => alert("Durée mise à jour !"))
               .catch(() => alert("Erreur lors de la sauvegarde"));
           }}

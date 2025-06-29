@@ -1,7 +1,8 @@
-// src/pages/ClientsPage.tsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import type { Client } from "../types";
+import { API_BASE_URL } from "../config";
+import ClientDetailsModal from "../components/ClientDetailsModal";
 
 const ClientsPage = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -13,10 +14,12 @@ const ClientsPage = () => {
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   const fetchClients = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/clients");
+      const res = await axios.get(`${API_BASE_URL}/api/clients`);
       setClients(res.data);
     } catch (err) {
       console.error("Erreur chargement clients", err);
@@ -35,12 +38,9 @@ const ClientsPage = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.put(
-          `http://localhost:5000/api/clients/${editingId}`,
-          formData
-        );
+        await axios.put(`${API_BASE_URL}/api/clients/${editingId}`, formData);
       } else {
-        await axios.post("http://localhost:5000/api/clients", formData);
+        await axios.post(`${API_BASE_URL}/api/clients`, formData);
       }
       fetchClients();
       setShowModal(false);
@@ -60,26 +60,41 @@ const ClientsPage = () => {
   const handleDelete = async (id: string) => {
     if (!confirm("Supprimer ce client ?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/clients/${id}`);
+      await axios.delete(`${API_BASE_URL}/api/clients/${id}`);
       fetchClients();
     } catch (err) {
       console.error("Erreur suppression client", err);
     }
   };
 
+  const filteredClients = clients.filter((c) =>
+    `${c.firstName} ${c.lastName} ${c.email} ${c.phone}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Gestion des clients</h1>
-      <button
-        className="mb-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
-        onClick={() => {
-          setShowModal(true);
-          setFormData({ firstName: "", lastName: "", phone: "", email: "" });
-          setEditingId(null);
-        }}
-      >
-        + Nouveau client
-      </button>
+      <div className="flex justify-between items-center mb-4">
+        <input
+          type="text"
+          placeholder="Rechercher..."
+          className="input w-full max-w-sm"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button
+          className="ml-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
+          onClick={() => {
+            setShowModal(true);
+            setFormData({ firstName: "", lastName: "", phone: "", email: "" });
+            setEditingId(null);
+          }}
+        >
+          + Nouveau client
+        </button>
+      </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-lg">
@@ -89,17 +104,23 @@ const ClientsPage = () => {
               <th className="px-4 py-2 text-left">Prénom</th>
               <th className="px-4 py-2 text-left">Téléphone</th>
               <th className="px-4 py-2 text-left">Email</th>
-              <th className="px-4 py-2">Actions</th>
+              <th className="px-4 py-2 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {clients.map((client) => (
+            {filteredClients.map((client) => (
               <tr key={client._id} className="border-t">
                 <td className="px-4 py-2">{client.lastName}</td>
                 <td className="px-4 py-2">{client.firstName}</td>
                 <td className="px-4 py-2">{client.phone}</td>
                 <td className="px-4 py-2">{client.email}</td>
                 <td className="px-4 py-2 space-x-2 text-center">
+                  <button
+                    onClick={() => setSelectedClient(client)}
+                    className="text-purple-600 hover:underline"
+                  >
+                    Fiche
+                  </button>
                   <button
                     onClick={() => handleEdit(client)}
                     className="text-blue-600 hover:underline"
@@ -115,10 +136,10 @@ const ClientsPage = () => {
                 </td>
               </tr>
             ))}
-            {clients.length === 0 && (
+            {filteredClients.length === 0 && (
               <tr>
                 <td colSpan={5} className="text-center text-gray-500 py-4">
-                  Aucun client pour le moment.
+                  Aucun client trouvé.
                 </td>
               </tr>
             )}
@@ -186,6 +207,17 @@ const ClientsPage = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {selectedClient && (
+        <ClientDetailsModal
+          client={selectedClient}
+          onClose={() => setSelectedClient(null)}
+          onClientUpdated={() => {
+            fetchClients(); // ✅ recharge la liste après sauvegarde des notes
+            setSelectedClient(null); // ✅ ferme la modale
+          }}
+        />
       )}
     </div>
   );
